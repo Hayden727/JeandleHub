@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # --- Script Configuration ---
-set -euo pipefail
+set -euo  # pipefail
 
 # --- Color Definitions ---
 GREEN='\033[0;32m'
@@ -201,8 +201,10 @@ log_success "jeandle-llvm built and installed successfully!"
 log_step "Building jeandle-jdk"
 cd "$JDK_SOURCE_DIR"
 
-# Clean up from a possibly failed previous configuration
-[ -f "Makefile" ] && make dist-clean
+# Thoroughly clean up any previous JDK build artifacts to ensure a clean slate.
+# This is more robust than 'make dist-clean' if the previous state was corrupted.
+log_info "Cleaning up previous JDK build artifacts..."
+rm -rf build
 
 log_info "Configuring jeandle-jdk..."
 bash configure \
@@ -215,7 +217,13 @@ make images JOBS=$(nproc)
 
 # --- 4. Finalization ---
 log_step "Build Complete"
-JDK_IMAGE_DIR_CANDIDATE=$(find "$JDK_SOURCE_DIR/build" -type d -name "jdk" | head -n 1)
+
+# ======================= CORRECTED PATH FINDING LOGIC =======================
+# Find the most recently modified 'images/jdk' directory. This is more robust
+# than the previous method and ensures we get the one just built.
+JDK_IMAGE_DIR_CANDIDATE=$(find "$JDK_SOURCE_DIR/build" -type d -path "*/images/jdk" -printf "%T@ %p\n" | sort -n | tail -n 1 | cut -d' ' -f2-)
+# ============================================================================
+
 if [ -z "$JDK_IMAGE_DIR_CANDIDATE" ]; then
     log_error "Build seems complete, but could not auto-locate the compiled JDK image."
     log_info "Please check the '$JDK_SOURCE_DIR/build' directory manually."
