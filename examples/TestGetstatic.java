@@ -8,6 +8,8 @@
 
 //  import jdk.test.lib.Asserts;
 
+package compiler.jeandle.bytecodeTranslate;
+
  public class TestGetstatic {
      static int a = 1;
      static int b = 2;
