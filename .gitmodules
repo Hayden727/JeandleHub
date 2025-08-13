@@ -1,6 +1,6 @@
 [submodule "libs/jeandle-jdk"]
 	path = libs/jeandle-jdk
-	url = git@github.com:jeandle/jeandle-jdk.git
+	url = git@github.com:Hayden727/jeandle-jdk.git
 [submodule "libs/jeandle-llvm"]
 	path = libs/jeandle-llvm
 	url = git@github.com:jeandle/jeandle-llvm.git
